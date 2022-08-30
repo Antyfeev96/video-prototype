@@ -2,6 +2,7 @@ import React, {useRef} from 'react';
 import {useVideoPlayer} from "./useVideoPlayer";
 import {formatSeconds} from "./utils";
 import FragmentTimeline from "./FragmentTimeline";
+import ProgressBar from "../canvas/ProgressBar";
 
 const rangeStyles = {
     width: '100%'
@@ -47,9 +48,12 @@ function VideoPlayer({ videoElement, fragments }) {
                 onChange={handleRangeSeek}
                 style={rangeStyles}
             />
-            <FragmentTimeline
-                fragments={fragments}
+            <ProgressBar
+                fragmentsObj={fragments}
             />
+            {/*<FragmentTimeline*/}
+            {/*    fragments={fragments}*/}
+            {/*/>*/}
             <button onClick={handleToggle}>
                 Play/Pause
             </button>
