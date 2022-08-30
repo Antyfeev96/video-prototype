@@ -3,6 +3,7 @@ import {useVideoPlayer} from "./useVideoPlayer";
 import {formatSeconds} from "./utils";
 import FragmentTimeline from "./FragmentTimeline";
 import ProgressBar from "../canvas/ProgressBar";
+import TimelineCanvas from '../canvas/Canvas';
 
 const rangeStyles = {
     width: '100%'
@@ -34,6 +35,10 @@ function VideoPlayer({ videoElement, fragments }) {
             }}
         >
             <video
+                id='video'
+                autoPlay
+                controls
+                className="videoCentered"
                 style={{
                     width: '100%'
                 }}
@@ -48,12 +53,13 @@ function VideoPlayer({ videoElement, fragments }) {
                 onChange={handleRangeSeek}
                 style={rangeStyles}
             />
-            <ProgressBar
-                fragmentsObj={fragments}
-            />
             {/*<FragmentTimeline*/}
             {/*    fragments={fragments}*/}
             {/*/>*/}
+            {/* <ProgressBar
+                fragmentsObj={fragments}
+            /> */}
+            <TimelineCanvas />
             <button onClick={handleToggle}>
                 Play/Pause
             </button>
