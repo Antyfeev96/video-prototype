@@ -1253,7 +1253,7 @@ function checkBuffer() {
 }
 
 function showCanvas() {
-  self.showMetrics();
+  // self.showMetrics();
   $('#bufferedOut').show();
   $('#bufferedCanvas').show();
 }

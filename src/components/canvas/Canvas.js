@@ -12,7 +12,8 @@ function TimelineCanvas() {
     return (
       <>
       <div id="controls" style={{
-        opacity: 0
+        opacity: 0,
+        height: '1px'
       }}>
         <div className="demo-controls-wrapper">
           <select id="streamSelect" className="innerControls">
@@ -22,14 +23,14 @@ function TimelineCanvas() {
             </option>
           </select>
 
-          <input id="streamURL" className="innerControls" type="text" value="" />
+          <input id="streamURL" className="innerControls" type="text" defaultValue="" />
 
           <label
             className="innerControls"
             title="Uncheck this to disable loading of streams selected from the drop-down above."
           >
             Enable streaming:
-            <input id="enableStreaming" type="checkbox" checked />
+            <input id="enableStreaming" type="checkbox" />
           </label>
 
           <label
@@ -37,7 +38,7 @@ function TimelineCanvas() {
             title="When a media error occurs, attempt to recover playback by calling `hls.recoverMediaError()`."
           >
             Auto-recover media-errors:
-            <input id="autoRecoverError" type="checkbox" checked />
+            <input id="autoRecoverError" type="checkbox" />
           </label>
 
           <label
@@ -45,12 +46,12 @@ function TimelineCanvas() {
             title="Stop loading and playback if playback under-buffer stalls. This can help debug stall errors."
           >
             Stop on first stall:
-            <input id="stopOnStall" type="checkbox" unchecked />
+            <input id="stopOnStall" type="checkbox" />
           </label>
 
           <label className="innerControls">
             Dump transmuxed fMP4 data:
-            <input id="dumpfMP4" type="checkbox" unchecked />
+            <input id="dumpfMP4" type="checkbox" />
           </label>
 
           <label className="innerControls">
@@ -100,7 +101,7 @@ function TimelineCanvas() {
                 type="checkbox"
               />
             </label>
-            <button name="config-apply" onclick="applyConfigEditorValue()">
+            <button name="config-apply">
               Apply
             </button>
           </div>
@@ -110,15 +111,21 @@ function TimelineCanvas() {
           className="center demo-tab demo-timeline-chart-container"
           id="timelineTab"
         >
-          <canvas 
-            id="timeline-chart" 
-          />  
+          <canvas
+            id="timeline-chart"
+          />
         </div>
-        <label class="center">Status:</label>
-      <pre id="statusOut" class="center"></pre>
+        <label className="center">Status:</label>
+      <pre id="statusOut" className="center"></pre>
 
-      <label class="center">Error:</label>
-      <pre id="errorOut" class="center"></pre>
+      <label className="center">Error:</label>
+      <pre id="errorOut" className="center"></pre>
+        <canvas
+            id="bufferedCanvas"
+            width="720"
+            height="1"
+            className="videoCentered"
+        />
       </>
     );
 }
