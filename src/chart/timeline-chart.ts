@@ -192,7 +192,6 @@ export class TimelineChart {
       const dataset = chart.data.datasets[(element[0] as any)._datasetIndex];
       const obj = dataset.data![(element[0] as any)._index];
       // eslint-disable-next-line no-console
-      console.log(obj);
       if (self.hls?.media) {
         const scale = this.chartScales[X_AXIS_SECONDS];
         const pos = Chart.helpers.getRelativePosition(event, chart);
@@ -295,6 +294,7 @@ export class TimelineChart {
   }
 
   updateLevels(levels: Level[], levelSwitched) {
+    console.log({levels})
     const { labels, datasets } = this.chart.data;
     if (!labels || !datasets) {
       return;
@@ -527,6 +527,7 @@ export class TimelineChart {
     const trackTypes = Object.keys(tracks).sort((type) =>
       type === 'video' ? 1 : -1
     );
+
     const mediaBufferData = [];
 
     this.removeSourceBuffers();
@@ -551,6 +552,9 @@ export class TimelineChart {
           sourceBuffer,
         })
       );
+
+      console.log({datasets})
+
       sourceBuffer.addEventListener('update', () => {
         try {
           replaceTimeRangeTuples(sourceBuffer.buffered, data);

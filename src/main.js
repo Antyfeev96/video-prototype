@@ -94,7 +94,6 @@ const playerResize = () => {
 resizeHandlers.push(playerResize);
 
 $(document).ready(function () {
-  console.log('ready')
   setupConfigEditor();
 
   chart = setupTimelineChart();
@@ -346,7 +345,6 @@ function loadSelectedStream() {
   self.hls = hls = new Hls(hlsConfig);
 
   logStatus('Loading manifest and attaching video element...');
-  console.log({video})
   const expiredTracks = [].filter.call(
     video.textTracks,
     (track) => track.kind !== 'metadata'
@@ -1565,7 +1563,6 @@ function setupConfigEditor() {
 
 function setupTimelineChart() {
   const canvas = document.querySelector('#timeline-chart');
-  console.log(canvas)
   const chart = new TimelineChart(canvas, {
     responsive: false,
   });
