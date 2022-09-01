@@ -2,12 +2,8 @@
 /* global $, Hls, __NETLIFY__ */
 /* eslint camelcase: 0 */
 import Hls from 'hls.js';
-
-// import { pack } from 'jsonpack';
-// import 'promise-polyfill/src/polyfill';
-import { sortObject, copyTextToClipboard } from './demo-utils';
+import { sortObject } from './demo-utils';
 import { TimelineChart } from './chart/timeline-chart.ts';
-
 // const NETLIFY = __NETLIFY__; // replaced in build
 
 const STORAGE_KEYS = {
@@ -17,7 +13,6 @@ const STORAGE_KEYS = {
   demo_tabs: 'hlsjs:demo-tabs',
 };
 
-// const testStreams = require('./tests/test-streams');
 const defaultTestStreamUrl = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
 const sourceURL = decodeURIComponent(getURLParam('src', defaultTestStreamUrl));
 
