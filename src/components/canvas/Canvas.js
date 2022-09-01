@@ -115,14 +115,12 @@ function TimelineCanvas() {
                     id="timeline-chart"
                 />
             </div>
-            <label className="center">Status:</label>
-            <pre id="statusOut" className="center"></pre>
-            <canvas
-                id="bufferedCanvas"
-                width="720"
-                height="1"
-                className="videoCentered"
-            />
+            {/*<canvas*/}
+            {/*    id="bufferedCanvas"*/}
+            {/*    width="720"*/}
+            {/*    height="1"*/}
+            {/*    className="videoCentered"*/}
+            {/*/>*/}
         </>
     );
 }

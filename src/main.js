@@ -311,13 +311,6 @@ function loadSelectedStream() {
     hls = null;
   }
 
-  if (!enableStreaming) {
-    logStatus('Streaming disabled');
-    return;
-  }
-
-  logStatus('Loading ' + url);
-
   // Extending both a demo-specific config and the user config which can override all
   const hlsConfig = $.extend(
     {},
@@ -339,7 +332,6 @@ function loadSelectedStream() {
 
   self.hls = hls = new Hls(hlsConfig);
 
-  logStatus('Loading manifest and attaching video element...');
   const expiredTracks = [].filter.call(
     video.textTracks,
     (track) => track.kind !== 'metadata'
@@ -348,9 +340,6 @@ function loadSelectedStream() {
     const kinds = expiredTracks
       .map((track) => track.kind)
       .filter((kind, index, self) => self.indexOf(kind) === index);
-    logStatus(
-      `Replacing video element to remove ${kinds.join(' and ')} text tracks`
-    );
     const videoWithExpiredTextTracks = video;
     video = videoWithExpiredTextTracks.cloneNode(false);
     video.removeAttribute('src');
@@ -372,7 +361,6 @@ function loadSelectedStream() {
   hls.attachMedia(video);
 
   hls.on(Hls.Events.MEDIA_ATTACHED, function () {
-    logStatus('Media element attached');
     bufferingIdx = -1;
     events.video.push({
       time: self.performance.now() - events.t0,
@@ -382,7 +370,6 @@ function loadSelectedStream() {
   });
 
   hls.on(Hls.Events.MEDIA_DETACHED, function () {
-    logStatus('Media element detached');
     clearInterval(hls.bufferTimer);
     bufferingIdx = -1;
     tracks = [];
@@ -439,8 +426,6 @@ function loadSelectedStream() {
   });
 
   hls.on(Hls.Events.MANIFEST_PARSED, function (eventName, data) {
-    logStatus(`${hls.levels.length} quality levels found`);
-    logStatus('Manifest successfully loaded');
     stats = {
       levelNb: data.levels.length,
       levelParsed: 0,
@@ -450,12 +435,10 @@ function loadSelectedStream() {
   });
 
   hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, function (eventName, data) {
-    logStatus('No of audio tracks found: ' + data.audioTracks.length);
     updateAudioTrackInfo();
   });
 
   hls.on(Hls.Events.AUDIO_TRACK_SWITCHING, function (eventName, data) {
-    logStatus('Audio track switching...');
     updateAudioTrackInfo();
     events.video.push({
       time: self.performance.now() - events.t0,
@@ -467,7 +450,6 @@ function loadSelectedStream() {
   });
 
   hls.on(Hls.Events.AUDIO_TRACK_SWITCHED, function (eventName, data) {
-    logStatus('Audio track switched');
     updateAudioTrackInfo();
     const event = {
       time: self.performance.now() - events.t0,
@@ -931,13 +913,9 @@ function addVideoEventListeners(video) {
 
 function handleUnsupported() {
   if (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1) {
-    logStatus(
-      'You are using Firefox, it looks like MediaSource is not enabled,<br>please ensure the following keys are set appropriately in <b>about:config</b><br>media.mediasource.enabled=true<br>media.mediasource.mp4.enabled=true<br><b>media.mediasource.whitelist=false</b>'
-    );
+
   } else {
-    logStatus(
-      'Your Browser does not support MediaSourceExtension / MP4 mediasource'
-    );
+
   }
 }
 
@@ -997,7 +975,6 @@ function handleVideoEvent(evt) {
           errorTxt += ' - ' + mediaError.message;
         }
 
-        logStatus(errorTxt);
         console.error(errorTxt);
       }
       break;
@@ -1801,10 +1778,6 @@ function appendLog(textElId, message) {
   el.text(logText);
   const element = el[0];
   element.scrollTop = element.scrollHeight - element.clientHeight;
-}
-
-function logStatus(message) {
-  appendLog('statusOut', message);
 }
 
 function logError(message) {
