@@ -13,6 +13,13 @@ const STORAGE_KEYS = {
   demo_tabs: 'hlsjs:demo-tabs',
 };
 
+const options = {
+  headers: {
+    Authorization: 'Basic bGlua2FkbWluOiMxMkRmc2FhJGZh',
+  },
+}
+
+// ''
 const defaultTestStreamUrl = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
 const sourceURL = decodeURIComponent(getURLParam('src', defaultTestStreamUrl));
 
@@ -93,16 +100,8 @@ $(document).ready(function () {
 
   chart = setupTimelineChart();
 
-  // Object.keys(testStreams).forEach((key, index) => {
-  //   const stream = testStreams[key];
-  //   const option = new Option(stream.description, key);
-  //   $('#streamSelect').append(option);
-  //   if (stream.url === sourceURL) {
-  //     document.querySelector('#streamSelect').selectedIndex = index + 1;
-  //   }
-  // });
-
   const videoWidth = video.style.width;
+
   if (videoWidth) {
     $('#videoSize option').each(function (i, option) {
       if (option.value === videoWidth) {
@@ -113,14 +112,6 @@ $(document).ready(function () {
       }
     });
   }
-
-  $('#streamSelect').change(function () {
-    // const key = $('#streamSelect').val() || Object.keys(testStreams)[0];
-    // selectedTestStream = testStreams[key];
-    // const streamUrl = selectedTestStream.url;
-    // $('#streamURL').val(streamUrl);
-    // loadSelectedStream();
-  });
 
   $('#streamURL').change(function () {
     selectedTestStream = null;
@@ -171,38 +162,6 @@ $(document).ready(function () {
   $('#stopOnStall').prop('checked', stopOnStall);
   $('#dumpfMP4').prop('checked', dumpfMP4);
   $('#levelCapping').val(levelCapping);
-
-  // link to version on npm if canary
-  // github branch for a branch version
-  // github tag for a normal tag
-  // github PR for a pr
-  // function getVersionLink(version) {
-  //   const alphaRegex = /[-.]0\.alpha\./;
-  //   if (alphaRegex.test(version)) {
-  //     return `https://www.npmjs.com/package/hls.js/v/${encodeURIComponent(
-  //       version
-  //     )}`;
-  //   } else if (NETLIFY.reviewID) {
-  //     return `https://github.com/video-dev/hls.js/pull/${NETLIFY.reviewID}`;
-  //   } else if (NETLIFY.branch) {
-  //     return `https://github.com/video-dev/hls.js/tree/${encodeURIComponent(
-  //       NETLIFY.branch
-  //     )}`;
-  //   }
-  //   return `https://github.com/video-dev/hls.js/releases/tag/v${encodeURIComponent(
-  //     version
-  //   )}`;
-  // }
-
-  // const version = Hls.version;
-  // if (version) {
-  //   const $a = $('<a />')
-  //     .attr('target', '_blank')
-  //     .attr('rel', 'noopener noreferrer')
-  //     // .attr('href', getVersionLink(version))
-  //     .text('v' + version);
-  //   $('.title').append(' ').append($a);
-  // }
 
   $('#streamURL').val(sourceURL);
 
@@ -331,6 +290,15 @@ function loadSelectedStream() {
   console.log('Using Hls.js config:', hlsConfig);
 
   self.hls = hls = new Hls(hlsConfig);
+  console.log(hls.levels)
+  // hls.levels = [...hls.levels.at(-1)]
+
+  // hls.levels[0].details.fragments = hls.levels[0].details.fragments.map(frag => ({
+  //   ...frag,
+  //   isCut: false
+  // }))
+  //
+  // console.log({hls})
 
   const expiredTracks = [].filter.call(
     video.textTracks,
@@ -1009,21 +977,6 @@ function handleVolumeEvent() {
       volume: video.volume,
     })
   );
-}
-
-function handleLevelError(data) {
-  var levelObj = data.context || data;
-  hls.removeLevel(levelObj.level, levelObj.urlId || 0);
-  if (!hls.levels.length) {
-    logError('All levels have been removed');
-    hls.destroy();
-    return;
-  }
-  // Trigger an immediate downswitch to the first level
-  // This is to handle the case where we start at an empty level, where switching to auto causes hlsjs to stall
-  hls.currentLevel = 0;
-  // Set the quality back to auto so that we return to optimal quality
-  hls.currentLevel = -1;
 }
 
 function handleMediaError() {
@@ -1776,8 +1729,8 @@ function appendLog(textElId, message) {
   logText += newMessage;
   // update
   el.text(logText);
-  const element = el[0];
-  element.scrollTop = element.scrollHeight - element.clientHeight;
+  // const element = el[0];
+  // element.scrollTop = element.scrollHeight - element.clientHeight;
 }
 
 function logError(message) {

@@ -454,6 +454,7 @@ export default class LevelController extends BasePlaylistController {
 
   protected onLevelLoaded(event: Events.LEVEL_LOADED, data: LevelLoadedData) {
     const { level, details } = data;
+    console.log({details})
     const curLevel = this._levels[level];
 
     if (!curLevel) {

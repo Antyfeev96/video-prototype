@@ -202,7 +202,7 @@ export function mergeDetails(
         newFrag.start = newFrag.startPTS = oldFrag.startPTS as number;
         newFrag.startDTS = oldFrag.startDTS;
         newFrag.appendedPTS = oldFrag.appendedPTS;
-        newFrag.maxStartPTS = oldFrag.maxStartPTS;
+        newFrag.maxStartPTS = oldFrag.maxStartPTS;s
 
         newFrag.endPTS = oldFrag.endPTS;
         newFrag.endDTS = oldFrag.endDTS;

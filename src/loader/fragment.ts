@@ -141,10 +141,13 @@ export class Fragment extends BaseSegment {
   public title: string | null = null;
   // The Media Initialization Section for this segment
   public initSegment: Fragment | null = null;
+  // Флаг isCut отвечает за то, что фрагмент является частью отрезка
+  public isCut: boolean = false
 
   constructor(type: PlaylistLevelType, baseurl: string) {
     super(baseurl);
     this.type = type;
+    this.isCut = false;
   }
 
   get decryptdata(): LevelKey | null {

@@ -94,7 +94,11 @@ class AbrController implements ComponentAPI {
       quickly enough to prevent underbuffering
     */
   private _abandonRulesCheck() {
-    const { fragCurrent: frag, partCurrent: part, hls } = this;
+    let { fragCurrent: frag, partCurrent: part, hls } = this;
+    frag = {
+      ...frag,
+      isCut: false,
+    }
     const { autoLevelEnabled, config, media } = hls;
     if (!frag || !media) {
       return;

@@ -135,7 +135,16 @@ class XhrLoader implements Loader<LoaderContext> {
   }
 
   readystatechange(): void {
-    const { context, loader: xhr, stats } = this;
+    let { context, loader: xhr, stats } = this;
+    context = {
+      // @ts-ignore
+      frag: {
+        isCut: false,
+        // @ts-ignore
+        ...context.frag
+      },
+      ...context
+    }
     if (!context || !xhr) {
       return;
     }
@@ -162,7 +171,7 @@ class XhrLoader implements Loader<LoaderContext> {
         xhr.onreadystatechange = null;
         xhr.onprogress = null;
         const status = xhr.status;
-        // http status between 200 to 299 are all successful
+        // http status between 200 and 299 are all successful
         if (status >= 200 && status < 300) {
           stats.loading.end = Math.max(
             self.performance.now(),
