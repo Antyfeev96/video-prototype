@@ -1,43 +1,5 @@
 import Chart from 'chart.js';
-
-// Modify horizontalBar so that each dataset (fragments, timeRanges) draws on the same row (level, track or buffer)
-Chart.controllers.horizontalBar.prototype.calculateBarValuePixels = function (
-    datasetIndex,
-    index,
-    options
-) {
-    const chart = this.chart;
-    const scale = this._getValueScale();
-    const datasets = chart.data.datasets;
-    if (!datasets) {
-        throw new Error(`Chart datasets are ${datasets}`);
-    }
-    scale._parseValue = scaleParseValue;
-    const obj = datasets[datasetIndex].data[index];
-    const value = scale._parseValue(obj);
-    const start =
-        value.start === undefined
-            ? 0
-            : value.max >= 0 && value.min >= 0
-                ? value.min
-                : value.max;
-    const length =
-        value.start === undefined
-            ? value.end
-            : value.max >= 0 && value.min >= 0
-                ? value.max - value.min
-                : value.min - value.max;
-    const base = scale.getPixelForValue(start);
-    const head = scale.getPixelForValue(start + length);
-    const size = head - base;
-
-    return {
-        size: size,
-        base: base,
-        head: head,
-        center: head + size / 2,
-    };
-};
+import {cuts} from "./timeline-chart.ts";
 
 Chart.controllers.horizontalBar.prototype.calculateBarIndexPixels = function (
     datasetIndex,
@@ -56,60 +18,11 @@ Chart.controllers.horizontalBar.prototype.calculateBarIndexPixels = function (
     };
 };
 
-const cuts = []
-
-const cut = (data: any[]) => {
-    const { currentTime } = document.getElementById('video') as any
-    console.log({data, currentTime})
-    if (!data || !currentTime) return;
-    const fragment = data.find(frag => {
-        const { maxStartPTS, minEndPTS } = frag
-        return maxStartPTS <= currentTime && currentTime <= minEndPTS
-    })
-    if (!fragment) return;
-    if (cuts.includes(fragment.sn)) return;
-    cuts.push(fragment.sn)
-    console.log(cuts)
-}
-
-// Chart.controllers.horizontalBar.prototype.cutLogic = function () {
-//     const cuts = []
-//
-//     const rects = this.getMeta().data;
-//     const len = rects.length;
-//     const dataset = this.getDataset();
-//
-//     const cut = (data: any[]) => {
-//         const { currentTime } = document.getElementById('video') as any
-//         console.log({data, currentTime})
-//         if (!data || !currentTime) return;
-//         const fragment = data.find(frag => {
-//             const { maxStartPTS, minEndPTS } = frag
-//             return maxStartPTS <= currentTime && currentTime <= minEndPTS
-//         })
-//         if (!fragment) return;
-//         if (cuts.includes(fragment.sn)) return;
-//         cuts.push(fragment.sn)
-//         console.log(cuts)
-//     }
-//
-//     if (len > 1) {
-//         document.getElementById('cut').addEventListener('click', () => cut(dataset.data))
-//     }
-// }
-
 Chart.controllers.horizontalBar.prototype.draw = function () {
     const rects = this.getMeta().data;
     const len = rects.length;
     const dataset = this.getDataset();
 
-    /// CUT LOGIC ///
-
-    if (len > 1) {
-        document.getElementById('cut').addEventListener('click', () => cut(dataset.data))
-    }
-
-    /// CUT LOGIC ///
     if (len !== dataset.data.length) {
         // View does not match dataset (wait for redraw)
         return;
@@ -174,6 +87,8 @@ Chart.controllers.horizontalBar.prototype.draw = function () {
                     view.backgroundColor = `rgba(0, 0, 0, ${0.05 + (i % 2) / 12})`; // красит фрагменты по очереди с разным opacity
                     if (cuts.includes(i)) {
                         view.backgroundColor = `orange`;
+                        // @ts-ignore
+                        window.refreshCanvas()
                     }
                 }
             }
@@ -274,8 +189,6 @@ Chart.controllers.horizontalBar.prototype.draw = function () {
 
     Chart.helpers.canvas.unclipArea(chart.ctx);
 };
-
-// Chart.controllers.horizontalBar.prototype.cutLogic()
 
 export function applyChartInstanceOverrides(chart) {
     Object.keys(chart.scales).forEach((axis) => {

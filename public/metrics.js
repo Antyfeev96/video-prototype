@@ -122,7 +122,6 @@ function windowCanvasonMouseMove(evt) {
           (canvas.width - eventLeftMargin)
       )
     );
-  // console.log(windowFocus);
   refreshCanvas();
 }
 

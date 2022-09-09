@@ -19,7 +19,6 @@ const options = {
   },
 }
 
-// ''
 const defaultTestStreamUrl = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
 const sourceURL = decodeURIComponent(getURLParam('src', defaultTestStreamUrl));
 
@@ -290,15 +289,6 @@ function loadSelectedStream() {
   console.log('Using Hls.js config:', hlsConfig);
 
   self.hls = hls = new Hls(hlsConfig);
-  console.log(hls.levels)
-  // hls.levels = [...hls.levels.at(-1)]
-
-  // hls.levels[0].details.fragments = hls.levels[0].details.fragments.map(frag => ({
-  //   ...frag,
-  //   isCut: false
-  // }))
-  //
-  // console.log({hls})
 
   const expiredTracks = [].filter.call(
     video.textTracks,
@@ -1186,13 +1176,6 @@ function hideCanvas() {
   $('#bufferedOut').hide();
   $('#bufferedCanvas').hide();
 }
-
-// function getMetrics() {
-  // const json = JSON.stringify(events);
-  // const jsonpacked = pack(json);
-  // // console.log('packing JSON from ' + json.length + ' to ' + jsonpacked.length + ' bytes');
-  // return btoa(jsonpacked);
-// }
 
 self.copyMetricsToClipBoard = function () {
   // copyTextToClipboard(getMetrics());

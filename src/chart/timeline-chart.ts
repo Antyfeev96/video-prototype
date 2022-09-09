@@ -39,6 +39,22 @@ interface ChartScale {
     getValueForPixel: (pixel: number) => number;
 }
 
+export const cuts = []
+
+const cut = (datasets: Fragment[]) => {
+    const { currentTime } = document.getElementById('video') as any
+    if (!datasets || !currentTime) return;
+    const fragment = datasets[0].data.find(frag => {
+        const { maxStartPTS, minEndPTS } = frag
+        return maxStartPTS <= currentTime && currentTime <= minEndPTS
+    })
+    if (!fragment) return;
+    if (cuts.includes(fragment.sn)) return;
+    cuts.push(fragment.sn)
+    // @ts-ignore
+    self.refreshCanvas();
+}
+
 export class TimelineChart {
     private readonly chart: Chart;
     private rafDebounceRequestId: number = -1;
@@ -48,7 +64,6 @@ export class TimelineChart {
     private cuesChangeHandler?: (e) => void;
     private hidden: boolean = true;
     private zoom100: number = 60;
-    private cuts: number[] = []
 
     constructor(canvas: HTMLCanvasElement, chartJsOptions?: any) {
         const ctx = canvas.getContext('2d');
@@ -70,6 +85,8 @@ export class TimelineChart {
                         plugins: [
                             {
                                 afterRender: (chart) => {
+                                    const { datasets } = chart.data
+                                    document.getElementById('cut').addEventListener('click', () => cut(datasets))
                                     this.imageDataBuffer = null;
                                     this.drawCurrentTime();
                                 },
@@ -312,20 +329,6 @@ export class TimelineChart {
 
         levels.forEach((level, i) => {
 
-            try {
-                if (level.details) {
-                    // @ts-ignore
-                    level.details.fragments = level.details?.fragments?.map(frag => ({
-                        ...frag,
-                        isCut: false
-                    }))
-                }
-
-                console.log({level})
-            } catch (e) {
-                console.log({e})
-            }
-
             const index = level.id || i;
             labels.push(getLevelName(level, index));
             let borderColor: string | null = null;
@@ -366,20 +369,6 @@ export class TimelineChart {
             return;
         }
         const {audioTrack} = self.hls;
-        // audioTracks.forEach((track: MediaPlaylist, i) => {
-        //     labels.push(getAudioTrackName(track, i));
-        //     datasets.push(
-        //         datasetWithDefaults({
-        //             url: track.url,
-        //             trackType: 'audioTrack',
-        //             borderColor: audioTrack === i ? 'rgba(32, 32, 240, 1.0)' : null,
-        //             audioTrack: i,
-        //         })
-        //     );
-        //     if (track.details) {
-        //         this.updateLevelOrTrack(track.details);
-        //     }
-        // });
         this.resize(datasets);
     }
 
@@ -389,20 +378,6 @@ export class TimelineChart {
             return;
         }
         const {subtitleTrack} = self.hls;
-        // subtitles.forEach((track, i) => {
-        //     labels.push(getSubtitlesName(track, i));
-        //     datasets.push(
-        //         datasetWithDefaults({
-        //             url: track.url,
-        //             trackType: 'subtitleTrack',
-        //             borderColor: subtitleTrack === i ? 'rgba(32, 32, 240, 1.0)' : null,
-        //             subtitleTrack: i,
-        //         })
-        //     );
-        //     if (track.details) {
-        //         this.updateLevelOrTrack(track.details);
-        //     }
-        // });
         this.resize(datasets);
     }
 
@@ -561,56 +536,12 @@ export class TimelineChart {
 
         this.media = media;
 
-        // trackTypes.forEach((type) => {
-        //     const track = tracks[type];
-        //     const data = [];
-        //     const sourceBuffer = track.buffer;
-        //     const backgroundColor = {
-        //         video: 'rgba(0, 0, 255, 0.2)',
-        //         audio: 'rgba(128, 128, 0, 0.2)',
-        //         audiovideo: 'rgba(128, 128, 255, 0.2)',
-        //     }[type];
-        //     labels.unshift(`${type} buffer (${track.id})`);
-        //     datasets.unshift(
-        //         datasetWithDefaults({
-        //             data,
-        //             categoryPercentage: 0.5,
-        //             backgroundColor,
-        //             sourceBuffer,
-        //         })
-        //     );
-        //
-        //     console.log({datasets})
-        //
-        //     sourceBuffer.addEventListener('update', () => {
-        //         try {
-        //             replaceTimeRangeTuples(sourceBuffer.buffered, data);
-        //         } catch (error) {
-        //             // eslint-disable-next-line no-console
-        //             console.warn(error);
-        //             return;
-        //         }
-        //         replaceTimeRangeTuples(media.buffered, mediaBufferData);
-        //         this.update();
-        //     });
-        // });
-
         if (trackTypes.length === 0) {
             media.onprogress = () => {
                 replaceTimeRangeTuples(media.buffered, mediaBufferData);
                 this.update();
             };
         }
-
-        // labels.unshift('media buffer');
-        // datasets.unshift(
-        //     datasetWithDefaults({
-        //         data: mediaBufferData,
-        //         categoryPercentage: 0.5,
-        //         backgroundColor: 'rgba(0, 255, 0, 0.2)',
-        //         media,
-        //     })
-        // );
 
         media.ontimeupdate = () => this.drawCurrentTime();
 
